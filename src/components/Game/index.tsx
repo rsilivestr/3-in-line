@@ -1,42 +1,65 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Cell } from 'components/Cell';
 import { Chip } from 'components/Chip';
-import { CELLS } from 'data';
+import {
+  CELLS,
+  INITIAL_CHIPS,
+  BLUE,
+  RED,
+  BLUE_EMPOWER_NODES,
+  RED_EMPOWER_NODES,
+  BLUE_WIN_POSITIONS,
+  RED_WIN_POSITIONS,
+  ALL_WIN_POSITIONS,
+} from 'data';
 import * as M from 'model';
 
 import * as S from './styled';
 
-const RED = 'red';
-const BLUE = 'blue';
+const toPositions = ({ position }: M.Chip) => position;
 
-type Color = typeof RED | typeof BLUE;
+const countEmpoweredChips = (count: number, { isEmpowered }: M.Chip): number =>
+  isEmpowered ? count + 1 : count;
 
-const RED_EMPOWER_NODES = [1, 2, 3];
-const BLUE_EMPOWER_NODES = [7, 8, 9];
+const checkEmpower = (chips: M.Chip[]) => chips.reduce(countEmpoweredChips, 0) === 3;
+
+const checkWinner = (chips: M.Chip[], activeColor: M.Color): M.Color | null => {
+  const activeChips = activeColor === BLUE ? chips.slice(0, 3) : chips.slice(3, 6);
+  const positions = activeChips.map(toPositions).sort();
+  const areEmpowered = checkEmpower(activeChips);
+  let winPositions: number[][];
+  if (areEmpowered) {
+    winPositions = ALL_WIN_POSITIONS;
+  } else {
+    winPositions = activeColor === BLUE ? BLUE_WIN_POSITIONS : RED_WIN_POSITIONS;
+  }
+  let isWin = false;
+  winPositions.forEach((wp) => {
+    if (wp.every((position) => positions.includes(position))) {
+      isWin = true;
+    }
+  });
+  return isWin ? activeColor : null;
+};
 
 export const Game = () => {
-  const [chips, setChips] = useState<M.Chip[]>([
-    { id: 1, color: BLUE, position: 1, isEmpowered: false },
-    { id: 2, color: BLUE, position: 2, isEmpowered: false },
-    { id: 3, color: BLUE, position: 3, isEmpowered: false },
-    { id: 4, color: RED, position: 7, isEmpowered: false },
-    { id: 5, color: RED, position: 8, isEmpowered: false },
-    { id: 6, color: RED, position: 9, isEmpowered: false },
-  ]);
+  const [chips, setChips] = useState<M.Chip[]>(INITIAL_CHIPS);
   const [selectedChip, setSelectedChip] = useState<M.Chip | null>(null);
-  const [activeColor, setActiveColor] = useState<Color>(RED);
+  const [winner, setWinner] = useState<M.Color>();
+  const activeColor = useRef<M.Color>(RED);
 
   const handleChipSelect = (chip: M.Chip) => {
+    if (winner) return;
     const { id, color } = chip;
     if (id === selectedChip?.id) {
       setSelectedChip(null);
-    } else if (color === activeColor) {
+    } else if (color === activeColor.current) {
       setSelectedChip(chip);
     }
   };
 
-  const handleCellClick = (cellId: number) => {
+  const handleCellClick = async (cellId: number) => {
     if (!selectedChip) return;
 
     const cell = CELLS.find(({ id }) => id === cellId);
@@ -72,9 +95,17 @@ export const Game = () => {
         return newState;
       });
       setSelectedChip(null);
-      setActiveColor((prevState) => (prevState === RED ? BLUE : RED));
+      activeColor.current = activeColor.current === RED ? BLUE : RED;
     }
   };
+
+  useEffect(() => {
+    const prevColor = activeColor.current === RED ? BLUE : RED;
+    const newWinner = checkWinner(chips, prevColor);
+    if (newWinner) {
+      setWinner(newWinner);
+    }
+  }, [chips]);
 
   return (
     <S.Root>

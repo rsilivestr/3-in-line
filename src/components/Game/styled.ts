@@ -11,7 +11,7 @@ export const Grid = styled.div`
   position: relative;
   display: grid;
   grid-template: repeat(3, 100px) / repeat(3, 100px);
-  grid-template-areas: "tl tm tr" "ml mm mr" "bl bm br";
+  grid-template-areas: 'tl tm tr' 'ml mm mr' 'bl bm br';
   gap: 100px;
   grid-area: main;
 `;

@@ -11,3 +11,5 @@ export type Chip = {
   isEmpowered: boolean;
   position: number;
 };
+
+export type Color = 'red' | 'blue';
