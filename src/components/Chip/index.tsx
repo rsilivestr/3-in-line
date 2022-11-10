@@ -6,27 +6,28 @@ import { Crown } from 'components/Crown';
 import * as S from './styled';
 
 type Props = {
-  active: boolean;
   color: string;
+  isActive: boolean;
   isEmpowered: boolean;
   isSelected: boolean;
+  isWinner: boolean;
   position: number;
-  winner: boolean;
   onClick: () => void;
 };
 
 export const Chip: React.FC<Props> = ({
-  active,
   color,
+  isActive,
   isEmpowered,
   isSelected,
+  isWinner,
   position,
-  winner,
   onClick,
 }) => {
-  const borderColor = isSelected ? 'lightgreen' : 'transparent';
-  const filter = active || winner ? undefined : 'grayscale(0.5)';
-  const opacity = active || winner ? 1 : 0.5;
+  // eslint-disable-next-line no-nested-ternary
+  const borderColor = isWinner ? '#fe4' : isSelected ? 'lightgreen' : 'transparent';
+  const filter = isActive || isWinner ? undefined : 'grayscale(0.5)';
+  const opacity = isActive || isWinner ? 1 : 0.5;
   const tx = Math.floor((position - 1) / 3) * 200;
   const ty = ((position - 1) % 3) * 200;
   const transform = `translate(${ty}%, ${tx}%)`;
@@ -38,7 +39,7 @@ export const Chip: React.FC<Props> = ({
       transform: ${transform} scale(4);
     }
     100% {
-      transform: ${transform} scale(1.5);
+      transform: ${transform} scale(1);
     }
   `;
 
@@ -47,7 +48,7 @@ export const Chip: React.FC<Props> = ({
     animation-fill-mode: forwards;
   `;
 
-  const Element = winner ? AnimatedChip : S.Chip;
+  const Element = isWinner ? AnimatedChip : S.Chip;
 
   return (
     <Element
@@ -57,6 +58,7 @@ export const Chip: React.FC<Props> = ({
         filter,
         opacity,
         transform,
+        zIndex: isWinner ? 5 : 1,
       }}
       onClick={onClick}
     >

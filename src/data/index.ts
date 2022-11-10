@@ -16,6 +16,25 @@ export const CELLS: M.Cell[] = [
   { id: 9, adjacent: [5, 6, 8] },
 ];
 
+export const TRACKS: [number, number][] = [
+  [1, 2],
+  [1, 4],
+  [1, 5],
+  [2, 3],
+  [2, 5],
+  [3, 5],
+  [3, 6],
+  [4, 5],
+  [4, 7],
+  [5, 6],
+  [5, 7],
+  [5, 8],
+  [5, 9],
+  [6, 9],
+  [7, 8],
+  [8, 9],
+];
+
 export const INITIAL_CHIPS: M.Chip[] = [
   { id: 1, color: BLUE, position: 1, isEmpowered: false },
   { id: 2, color: BLUE, position: 2, isEmpowered: false },

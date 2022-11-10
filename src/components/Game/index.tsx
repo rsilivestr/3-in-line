@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Cell } from 'components/Cell';
 import { Chip } from 'components/Chip';
+import { Track } from 'components/Track';
 import {
   CELLS,
+  TRACKS,
   INITIAL_CHIPS,
   BLUE,
   RED,
@@ -16,6 +18,18 @@ import {
 import * as M from 'model';
 
 import * as S from './styled';
+
+const getDirection = (chip: M.Chip, from: number, to: number): M.Direction => {
+  let direction: M.Direction;
+  if (Math.abs(from - to) === 1) {
+    direction = 'neutral';
+  } else if ((from - to > 0 && chip.color === RED) || (from - to < 0 && chip.color === BLUE)) {
+    direction = 'forward';
+  } else {
+    direction = 'backward';
+  }
+  return direction;
+};
 
 const toPositions = ({ position }: M.Chip) => position;
 
@@ -52,9 +66,7 @@ export const Game = () => {
   const handleChipSelect = (chip: M.Chip) => {
     if (winner) return;
     const { id, color } = chip;
-    if (id === selectedChip?.id) {
-      setSelectedChip(null);
-    } else if (color === activeColor.current) {
+    if (id !== selectedChip?.id && color === activeColor.current) {
       setSelectedChip(chip);
     }
   };
@@ -69,14 +81,7 @@ export const Game = () => {
       const to = cellId;
 
       // Determine move direction
-      let direction: M.Direction;
-      if (Math.abs(from - to) === 1) {
-        direction = 'neutral';
-      } else if ((from - to > 0 && chipColor === RED) || (from - to < 0 && chipColor === BLUE)) {
-        direction = 'forward';
-      } else {
-        direction = 'backward';
-      }
+      const direction = getDirection(selectedChip, from, to);
       if (direction === 'backward' && !selectedChip.isEmpowered) return;
 
       // Determine if the chip will become empowered
@@ -110,6 +115,23 @@ export const Game = () => {
   return (
     <S.Root>
       <S.Grid>
+        {TRACKS.map((cells) => {
+          let isActive = false;
+          if (selectedChip) {
+            const chipPositions = chips.map(toPositions);
+            const isConnected = cells.includes(selectedChip.position);
+            const isBlocked = chipPositions.includes(cells[0]) && chipPositions.includes(cells[1]);
+            if (isConnected && !isBlocked) {
+              const from = selectedChip.position;
+              const to = cells.find((pos) => pos !== from);
+              const direction = getDirection(selectedChip, from, to!);
+              if (direction !== 'backward' || selectedChip.isEmpowered) {
+                isActive = true;
+              }
+            }
+          }
+          return <Track cells={cells} isActive={isActive} />;
+        })}
         {CELLS.map(({ id }) => (
           <Cell key={id} onClick={() => handleCellClick(id)} />
         ))}
@@ -118,12 +140,12 @@ export const Game = () => {
           return (
             <Chip
               key={id}
-              active={color === activeColor.current}
               color={color}
+              isActive={color === activeColor.current}
               isEmpowered={isEmpowered}
               isSelected={id === selectedChip?.id}
+              isWinner={color === winner}
               position={position}
-              winner={color === winner}
               onClick={() => handleChipSelect(chip)}
             />
           );
