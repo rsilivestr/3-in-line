@@ -118,10 +118,12 @@ export const Game = () => {
           return (
             <Chip
               key={id}
+              active={color === activeColor.current}
               color={color}
               isEmpowered={isEmpowered}
               isSelected={id === selectedChip?.id}
               position={position}
+              winner={color === winner}
               onClick={() => handleChipSelect(chip)}
             />
           );
