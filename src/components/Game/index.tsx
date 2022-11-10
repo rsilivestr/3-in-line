@@ -61,6 +61,7 @@ export const Game = () => {
   const [chips, setChips] = useState<M.Chip[]>(INITIAL_CHIPS);
   const [selectedChip, setSelectedChip] = useState<M.Chip | null>(null);
   const [winner, setWinner] = useState<M.Color>();
+  const [activeCells, setActiveCells] = useState<number[]>([]);
   const activeColor = useRef<M.Color>(RED);
 
   const handleChipSelect = (chip: M.Chip) => {
@@ -100,6 +101,7 @@ export const Game = () => {
         return newState;
       });
       setSelectedChip(null);
+      setActiveCells([]);
       activeColor.current = activeColor.current === RED ? BLUE : RED;
     }
   };
@@ -111,6 +113,22 @@ export const Game = () => {
       setWinner(newWinner);
     }
   }, [chips]);
+
+  useEffect(() => {
+    if (selectedChip) {
+      const selectedPosition = selectedChip.position;
+      const chipPositions = chips.map(toPositions);
+      const connectedCells = TRACKS.filter((cells) => cells.includes(selectedPosition))
+        .flat()
+        .filter(
+          (cell) =>
+            cell !== selectedPosition &&
+            !chipPositions.includes(cell) &&
+            getDirection(selectedChip, selectedPosition, cell) !== 'backward'
+        );
+      setActiveCells(connectedCells);
+    }
+  }, [selectedChip]);
 
   return (
     <S.Root>
@@ -130,10 +148,10 @@ export const Game = () => {
               }
             }
           }
-          return <Track cells={cells} isActive={isActive} />;
+          return <Track key={`${cells[0]}${cells[1]}`} cells={cells} isActive={isActive} />;
         })}
         {CELLS.map(({ id }) => (
-          <Cell key={id} onClick={() => handleCellClick(id)} />
+          <Cell key={id} isActive={activeCells.includes(id)} onClick={() => handleCellClick(id)} />
         ))}
         {chips.map((chip) => {
           const { id, color, isEmpowered, position } = chip;
