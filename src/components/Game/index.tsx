@@ -10,6 +10,8 @@ import * as S from './styled';
 const RED = 'red';
 const BLUE = 'blue';
 
+type Color = typeof RED | typeof BLUE;
+
 const RED_EMPOWER_NODES = [1, 2, 3];
 const BLUE_EMPOWER_NODES = [7, 8, 9];
 
@@ -23,11 +25,13 @@ export const Game = () => {
     { id: 6, color: RED, position: 9, isEmpowered: false },
   ]);
   const [selectedChip, setSelectedChip] = useState<M.Chip | null>(null);
+  const [activeColor, setActiveColor] = useState<Color>(RED);
 
   const handleChipSelect = (chip: M.Chip) => {
-    if (chip.id === selectedChip?.id) {
+    const { id, color } = chip;
+    if (id === selectedChip?.id) {
       setSelectedChip(null);
-    } else {
+    } else if (color === activeColor) {
       setSelectedChip(chip);
     }
   };
@@ -40,6 +44,8 @@ export const Game = () => {
       const chipColor = selectedChip.color;
       const from = selectedChip.position;
       const to = cellId;
+
+      // Determine move direction
       let direction: M.Direction;
       if (Math.abs(from - to) === 1) {
         direction = 'neutral';
@@ -49,7 +55,8 @@ export const Game = () => {
         direction = 'backward';
       }
       if (direction === 'backward' && !selectedChip.isEmpowered) return;
-      // 2. Determine if will become empowered
+
+      // Determine if the chip will become empowered
       let willEmpower: boolean = selectedChip.isEmpowered;
       if (
         (chipColor === RED && RED_EMPOWER_NODES.includes(to)) ||
@@ -57,13 +64,15 @@ export const Game = () => {
       ) {
         willEmpower = true;
       }
-      // 3. Commit movement
+
+      // Move and deselect chip
       setChips((prevState) => {
         const newState = [...prevState];
         newState[selectedChip.id - 1] = { ...selectedChip, position: to, isEmpowered: willEmpower };
         return newState;
       });
       setSelectedChip(null);
+      setActiveColor((prevState) => (prevState === RED ? BLUE : RED));
     }
   };
 
