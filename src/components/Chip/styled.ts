@@ -5,6 +5,9 @@ export const Chip = styled.div<{ $color: string; $selected: boolean }>`
   width: 100px;
   height: 100px;
   padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 100%;
   background-color: ${({ $color }) => $color};
   background-clip: padding-box;

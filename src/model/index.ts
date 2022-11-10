@@ -1,17 +1,13 @@
-export type Player = {
-  id: number;
-};
+export type Direction = 'forward' | 'backward' | 'neutral';
 
 export type Cell = {
   id: number;
-  row?: number;
-  column?: number;
   adjacent: number[]; // Cell ids
-  occupied?: number; // Chip id
 };
 
 export type Chip = {
   id: number;
   color: string;
+  isEmpowered: boolean;
   position: number;
 };

@@ -1,13 +1,16 @@
+import { Crown } from 'components/Crown';
+
 import * as S from './styled';
 
 type Props = {
   color: string;
+  isEmpowered: boolean;
   isSelected: boolean;
   position: number;
   onClick: () => void;
 };
 
-export const Chip: React.FC<Props> = ({ color, position, isSelected, onClick }) => {
+export const Chip: React.FC<Props> = ({ color, isEmpowered, isSelected, position, onClick }) => {
   const tx = Math.floor((position - 1) / 3) * 200;
   const ty = ((position - 1) % 3) * 200;
 
@@ -17,9 +20,11 @@ export const Chip: React.FC<Props> = ({ color, position, isSelected, onClick }) 
       $selected={isSelected}
       style={{
         borderColor: isSelected ? 'lightgreen' : 'transparent',
-        transform: `translate(${ty}%, ${tx}%)`
+        transform: `translate(${ty}%, ${tx}%)`,
       }}
       onClick={onClick}
-    />
+    >
+      {isEmpowered && <Crown />}
+    </S.Chip>
   );
 };
