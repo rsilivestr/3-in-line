@@ -25,7 +25,7 @@ export const Chip: React.FC<Props> = ({
   onClick,
 }) => {
   // eslint-disable-next-line no-nested-ternary
-  const borderColor = isWinner ? '#fe4' : isSelected ? 'lightgreen' : 'transparent';
+  const borderColor = isWinner ? '#fe4' : isSelected ? '#8d8' : 'transparent';
   const filter = isActive || isWinner ? undefined : 'grayscale(0.5)';
   const opacity = isActive || isWinner ? 1 : 0.5;
   const tx = Math.floor((position - 1) / 3) * 200;

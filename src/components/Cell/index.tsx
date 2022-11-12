@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const Cell: React.FC<Props> = ({ children, isActive, onClick }) => (
-  <S.Cell style={{ borderColor: isActive ? 'lightgreen' : '#dde' }} onClick={onClick}>
+  <S.Cell style={{ borderColor: isActive ? '#8d8' : '#dde' }} onClick={onClick}>
     {children}
   </S.Cell>
 );

@@ -15,6 +15,6 @@ export const Chip = styled.div<{ $color: string }>`
   transition: all 200ms;
 
   &:hover {
-    border-color: lightgreen;
+    border-color: #8d8;
   }
 `;

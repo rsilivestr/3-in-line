@@ -20,7 +20,7 @@ export const Track: React.FC<Props> = ({ cells, isActive }) => {
   const ty = 45 + Math.floor((from - 1) / 3) * 200;
   const tx = 50 + ((from - 1) % 3) * 200;
   const transform = `translate(${tx}px, ${ty}px) rotate(${angle}deg)`;
-  const backgroundColor = isActive ? 'lightgreen' : '#dde';
+  const backgroundColor = isActive ? '#8d8' : '#dde';
 
   return <S.Track style={{ backgroundColor, transform, transformOrigin: 'center left' }} />;
 };

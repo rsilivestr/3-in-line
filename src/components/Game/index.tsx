@@ -24,7 +24,7 @@ const checkBackMove = ({ color }: M.Chip, from: number, to: number): boolean => 
   const isRed = color === RED;
   const diff = from - to;
   const blueBackward = diff > 1 && isBlue;
-  const redBackward = diff < 1 && isRed;
+  const redBackward = diff < -1 && isRed;
   return blueBackward || redBackward;
 };
 
@@ -57,7 +57,7 @@ const checkWinner = (chips: M.Chip[], activeColor: M.Color): M.Color | null => {
 export const Game = () => {
   const [chips, setChips] = useState<M.Chip[]>(INITIAL_CHIPS);
   const [selectedChip, setSelectedChip] = useState<M.Chip | null>(null);
-  const [winner, setWinner] = useState<M.Color>();
+  const [winner, setWinner] = useState<M.Color | null>(null);
   const [activeCells, setActiveCells] = useState<number[]>([]);
   const activeColor = useRef<M.Color>(RED);
 
@@ -101,6 +101,14 @@ export const Game = () => {
       setActiveCells([]);
       activeColor.current = activeColor.current === RED ? BLUE : RED;
     }
+  };
+
+  const handleRestartClick = () => {
+    setChips(INITIAL_CHIPS);
+    setSelectedChip(null);
+    setActiveCells([]);
+    setWinner(null);
+    activeColor.current = RED;
   };
 
   useEffect(() => {
@@ -166,6 +174,9 @@ export const Game = () => {
           );
         })}
       </S.Grid>
+      <S.Button type="button" onClick={handleRestartClick}>
+        Restart
+      </S.Button>
     </S.Root>
   );
 };
