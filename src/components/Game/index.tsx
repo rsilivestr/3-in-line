@@ -19,16 +19,13 @@ import {
 } from './constants';
 import * as S from './styled';
 
-const getDirection = (chip: M.Chip, from: number, to: number): M.Direction => {
-  let direction: M.Direction;
-  if (Math.abs(from - to) === 1) {
-    direction = 'neutral';
-  } else if ((from - to > 0 && chip.color === RED) || (from - to < 0 && chip.color === BLUE)) {
-    direction = 'forward';
-  } else {
-    direction = 'backward';
-  }
-  return direction;
+const checkBackMove = ({ color }: M.Chip, from: number, to: number): boolean => {
+  const isBlue = color === BLUE;
+  const isRed = color === RED;
+  const diff = from - to;
+  const blueBackward = diff > 1 && isBlue;
+  const redBackward = diff < 1 && isRed;
+  return blueBackward || redBackward;
 };
 
 const toPositions = ({ position }: M.Chip) => position;
@@ -81,9 +78,9 @@ export const Game = () => {
       const from = selectedChip.position;
       const to = cellId;
 
-      // Determine move direction
-      const direction = getDirection(selectedChip, from, to);
-      if (direction === 'backward' && !selectedChip.isEmpowered) return;
+      const isBackward = checkBackMove(selectedChip, from, to!);
+      const isMoveAllowed = !isBackward || selectedChip.isEmpowered;
+      if (!isMoveAllowed) return;
 
       // Determine if the chip will become empowered
       let willEmpower: boolean = selectedChip.isEmpowered;
@@ -120,12 +117,12 @@ export const Game = () => {
       const chipPositions = chips.map(toPositions);
       const connectedCells = TRACKS.filter((cells) => cells.includes(selectedPosition))
         .flat()
-        .filter(
-          (cell) =>
-            cell !== selectedPosition &&
-            !chipPositions.includes(cell) &&
-            getDirection(selectedChip, selectedPosition, cell) !== 'backward'
-        );
+        .filter((cell) => {
+          const isTargetCellEmpty = !chipPositions.includes(cell);
+          const isBackward = checkBackMove(selectedChip, selectedPosition, cell);
+          const isMoveAllowed = !isBackward || selectedChip.isEmpowered;
+          return isTargetCellEmpty && isMoveAllowed;
+        });
       setActiveCells(connectedCells);
     }
   }, [selectedChip]);
@@ -142,8 +139,8 @@ export const Game = () => {
             if (isConnected && !isBlocked) {
               const from = selectedChip.position;
               const to = cells.find((pos) => pos !== from);
-              const direction = getDirection(selectedChip, from, to!);
-              if (direction !== 'backward' || selectedChip.isEmpowered) {
+              const isBackward = checkBackMove(selectedChip, from, to!);
+              if (!isBackward || selectedChip.isEmpowered) {
                 isActive = true;
               }
             }
