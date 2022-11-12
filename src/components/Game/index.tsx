@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Cell } from 'components/Cell';
 import { Chip } from 'components/Chip';
 import { Track } from 'components/Track';
+import * as M from 'model';
+
 import {
   CELLS,
   TRACKS,
@@ -14,9 +16,7 @@ import {
   BLUE_WIN_POSITIONS,
   RED_WIN_POSITIONS,
   ALL_WIN_POSITIONS,
-} from 'data';
-import * as M from 'model';
-
+} from './constants';
 import * as S from './styled';
 
 const getDirection = (chip: M.Chip, from: number, to: number): M.Direction => {

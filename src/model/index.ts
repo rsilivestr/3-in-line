@@ -2,7 +2,7 @@ export type Direction = 'forward' | 'backward' | 'neutral';
 
 export type Cell = {
   id: number;
-  adjacent: number[]; // Cell ids
+  adjacent: number[];
 };
 
 export type Chip = {
